@@ -24,6 +24,24 @@ lvim.format_on_save = {
 lvim.leader = "space"
 -- add your own keymapping
 lvim.keys.normal_mode["<C-s>"] = ":w<cr>"
+lvim.keys.normal_mode["L"] = "$"
+lvim.keys.normal_mode["H"] = "^"
+lvim.keys.normal_mode["<A-h>"] = ":BufferLineCyclePrev<CR>"
+lvim.keys.normal_mode["<A-l>"] = ":BufferLineCycleNext<CR>"
+lvim.keys.insert_mode["<A-h>"] = "<Esc>:BufferLineCyclePrev<CR>"
+lvim.keys.insert_mode["<A-l>"] = "<Esc>:BufferLineCycleNext<CR>"
+lvim.keys.insert_mode["jj"] = "<Esc>"
+
+lvim.keys.visual_mode["L"] = "$"
+lvim.keys.visual_mode["H"] = "^"
+
+lvim.builtin.which_key.mappings["lr"] = {
+  { "<cmd>lua require('renamer').rename()<cr>", "Rename" },
+}
+
+lvim.builtin.which_key.mappings["lg"] = {
+  { "<cmd>GitBlameToggle<cr>", "Gitblame" },
+}
 
 -- lvim.keys.normal_mode["<S-l>"] = ":BufferLineCycleNext<CR>"
 -- lvim.keys.normal_mode["<S-h>"] = ":BufferLineCyclePrev<CR>"
@@ -44,6 +62,55 @@ lvim.builtin.nvimtree.setup.renderer.icons.show.git = false
 -- Automatically install missing parsers when entering buffer
 lvim.builtin.treesitter.auto_install = true
 lvim.format_on_save = false;
+lvim.plugins = {
+    {
+        "f-person/git-blame.nvim",
+        event = "BufRead",
+        config = function()
+          vim.cmd "highlight default link gitblame SpecialComment"
+          vim.cmd "GitBlameDisable"
+        end,
+    },
+    {
+        'nvim-lua/plenary.nvim'
+    },
+    {
+        'filipdutescu/renamer.nvim',
+        branch = 'master',
+        config = function()
+          require('renamer').setup()
+        end
+    },
+    {
+        "rcarriga/nvim-notify"
+    },
+    {
+      "MunifTanjim/nui.nvim"
+    },
+    {
+        "folke/noice.nvim",
+        config = function()
+          require("noice").setup({
+              lsp = {
+                  -- override markdown rendering so that **cmp** and other plugins use **Treesitter**
+                  override = {
+                      ["vim.lsp.util.convert_input_to_markdown_lines"] = true,
+                      ["vim.lsp.util.stylize_markdown"] = true,
+                      ["cmp.entry.get_documentation"] = true,
+                  },
+              },
+              -- you can enable a preset for easier configuration
+              presets = {
+                  bottom_search = true, -- use a classic bottom cmdline for search
+                  command_palette = true, -- position the cmdline and popupmenu together
+                  long_message_to_split = true, -- long messages will be sent to a split
+                  inc_rename = false, -- enables an input dialog for inc-rename.nvim
+                  lsp_doc_border = false, -- add a border to hover docs and signature help
+              },
+          })
+        end,
+    }
+}
 -- lvim.builtin.treesitter.ignore_install = { "haskell" }
 
 -- -- always installed on startup, useful for parsers without a strict filetype
