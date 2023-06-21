@@ -28,6 +28,10 @@ lvim.keys.normal_mode["L"] = "$"
 lvim.keys.normal_mode["H"] = "^"
 lvim.keys.normal_mode["<A-h>"] = ":BufferLineCyclePrev<CR>"
 lvim.keys.normal_mode["<A-l>"] = ":BufferLineCycleNext<CR>"
+lvim.keys.normal_mode["<leader>%"] = ":vsp<CR>"
+lvim.keys.normal_mode["<leader>\""] = ":sp<CR>"
+lvim.keys.normal_mode["<leader>x"] = ":q<CR>"
+
 lvim.keys.insert_mode["<A-h>"] = "<Esc>:BufferLineCyclePrev<CR>"
 lvim.keys.insert_mode["<A-l>"] = "<Esc>:BufferLineCycleNext<CR>"
 lvim.keys.insert_mode["jj"] = "<Esc>"
@@ -42,6 +46,32 @@ lvim.builtin.which_key.mappings["lr"] = {
 lvim.builtin.which_key.mappings["lg"] = {
   { "<cmd>GitBlameToggle<cr>", "Gitblame" },
 }
+
+vim.list_extend(lvim.lsp.automatic_configuration.skipped_servers, { "clangd" })
+
+local clangd_flags = {
+  "--fallback-style=google",
+  "--background-index",
+  "-j=12",
+  "--all-scopes-completion",
+  "--pch-storage=disk",
+  "--clang-tidy",
+  "--log=error",
+  "--completion-style=detailed",
+  "--header-insertion=iwyu",
+  "--header-insertion-decorators",
+  "--enable-config",
+  "--offset-encoding=utf-16",
+  "--ranking-model=heuristics",
+  "--folding-ranges",
+}
+
+local clangd_bin = "clangd"
+
+local opts = {
+  cmd = { clangd_bin, unpack(clangd_flags) },
+}
+require("lvim.lsp.manager").setup("clangd", opts)
 
 -- lvim.keys.normal_mode["<S-l>"] = ":BufferLineCycleNext<CR>"
 -- lvim.keys.normal_mode["<S-h>"] = ":BufferLineCyclePrev<CR>"
@@ -82,7 +112,7 @@ lvim.plugins = {
         end
     },
     {
-        "rcarriga/nvim-notify"
+      "rcarriga/nvim-notify"
     },
     {
       "MunifTanjim/nui.nvim"
@@ -101,7 +131,7 @@ lvim.plugins = {
               },
               -- you can enable a preset for easier configuration
               presets = {
-                  bottom_search = true, -- use a classic bottom cmdline for search
+                  bottom_search = false, -- use a classic bottom cmdline for search
                   command_palette = true, -- position the cmdline and popupmenu together
                   long_message_to_split = true, -- long messages will be sent to a split
                   inc_rename = false, -- enables an input dialog for inc-rename.nvim
@@ -109,8 +139,80 @@ lvim.plugins = {
               },
           })
         end,
+    },
+    {
+      "glepnir/zephyr-nvim"
+    },
+    {
+      "rebelot/kanagawa.nvim"
+    },
+    {
+      'jacoborus/tender.vim'
+    },
+    {
+      'folke/tokyonight.nvim'
+    },
+    {
+      'theHamsta/nvim-dap-virtual-text',
+        config = function()
+            require("nvim-dap-virtual-text").setup()
+        end
+    },
+    {
+      "zbirenbaum/copilot.lua"
+    },
+    {
+      "zbirenbaum/copilot-cmp",
+      event = "InsertEnter",
+      config = function()
+        vim.defer_fn(function()
+          require("copilot").setup() -- https://github.com/zbirenbaum/copilot.lua/blob/master/README.md#setup-and-configuration
+          require("copilot_cmp").setup() -- https://github.com/zbirenbaum/copilot-cmp/blob/master/README.md#configuration
+        end, 100)
+      end,
     }
 }
+
+lvim.colorscheme = 'tokyonight-night'
+
+local dap = require('dap')
+dap.adapters.cppdbg = {
+  id = 'cppdbg',
+  type = 'executable',
+  command = '/home/ajh/work/extension/debugAdapters/bin/OpenDebugAD7'
+}
+
+dap.configurations.cpp = {
+    {
+        name = "Launch file",
+        type = "cppdbg",
+        request = "launch",
+        program = function()
+            return vim.fn.input("Path to executable: ", vim.fn.getcwd() .. "/", "file")
+        end,
+        cwd = "${workspaceFolder}",
+        stopAtEntry = true,
+    }
+}
+
+dap.configurations.c = dap.configurations.cpp
+
+-- vim.g.copilot_tab_fallback = ""
+-- local cmp = require "cmp"
+
+-- lvim.builtin.cmp.mapping["<Tab>"] = function(fallback)
+--   if cmp.visible() then
+--     cmp.select_next_item()
+--   else
+--     local copilot_keys = vim.fn["copilot#Accept"]()
+--     if copilot_keys ~= "" then
+--       vim.api.nvim_feedkeys(copilot_keys, "i", true)
+--     else
+--       fallback()
+--     end
+--   end
+-- end
+
 -- lvim.builtin.treesitter.ignore_install = { "haskell" }
 
 -- -- always installed on startup, useful for parsers without a strict filetype

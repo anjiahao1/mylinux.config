@@ -3,8 +3,9 @@ return {
     hide_tab_bar_if_only_one_tab = true,
     color_scheme = "tokyonight",
     font = wezterm.font('JetBrainsMono Nerd Font'),
-    font_size = 18.0,
+    font_size = 14.0,
     leader = { key = "x", mods = "CTRL" },
+    check_for_updates = false,
     keys = {
         { key = "o",   mods = "LEADER",       action = wezterm.action.ToggleFullScreen },
         { key = "`",   mods = "LEADER|CTRL",  action = wezterm.action { SendString = "`" } },
@@ -38,4 +39,5 @@ return {
         { key = "y",   mods = "CTRL",         action = wezterm.action({ PasteFrom = "Clipboard" }) },
         { key = "Tab", mods = "LEADER",       action = wezterm.action({ ActivateTabRelative = 1 }) },
     },
+
 }
