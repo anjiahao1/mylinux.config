@@ -10,6 +10,7 @@ vim.opt.listchars:append "eol:↴"
 vim.opt.listchars:append "space:·"
 vim.opt.listchars:append "tab:<~"
 vim.opt.list = true
+vim.wo.colorcolumn = '79'
 -- general
 lvim.log.level = "info"
 lvim.format_on_save = {
@@ -47,31 +48,31 @@ lvim.builtin.which_key.mappings["lg"] = {
   { "<cmd>GitBlameToggle<cr>", "Gitblame" },
 }
 
--- vim.list_extend(lvim.lsp.automatic_configuration.skipped_servers, { "clangd" })
+vim.list_extend(lvim.lsp.automatic_configuration.skipped_servers, { "clangd"})
 
--- local clangd_flags = {
---   "--fallback-style=google",
---   "--background-index",
---   "-j=12",
---   "--all-scopes-completion",
---   "--pch-storage=disk",
---   "--clang-tidy",
---   "--log=error",
---   "--completion-style=detailed",
---   "--header-insertion=iwyu",
---   "--header-insertion-decorators",
---   "--enable-config",
---   "--offset-encoding=utf-16",
---   "--ranking-model=heuristics",
---   "--folding-ranges",
--- }
+local clangd_flags = {
+  "--fallback-style=google",
+  "--background-index",
+  "-j=12",
+  "--all-scopes-completion",
+  "--pch-storage=disk",
+  "--clang-tidy",
+  "--log=error",
+  "--completion-style=detailed",
+  "--header-insertion=iwyu",
+  "--header-insertion-decorators",
+  "--enable-config",
+  "--offset-encoding=utf-16",
+  "--ranking-model=heuristics",
+  "--folding-ranges",
+}
 
--- local clangd_bin = "clangd"
+local clangd_bin = "clangd"
 
--- local opts = {
---   cmd = { clangd_bin, unpack(clangd_flags) },
--- }
--- require("lvim.lsp.manager").setup("clangd", opts)
+local opts = {
+  cmd = { clangd_bin, unpack(clangd_flags) },
+}
+require("lvim.lsp.manager").setup("clangd", opts)
 
 -- lvim.keys.normal_mode["<S-l>"] = ":BufferLineCycleNext<CR>"
 -- lvim.keys.normal_mode["<S-h>"] = ":BufferLineCyclePrev<CR>"
@@ -168,8 +169,29 @@ lvim.plugins = {
         vim.defer_fn(function()
           require("copilot").setup() -- https://github.com/zbirenbaum/copilot.lua/blob/master/README.md#setup-and-configuration
           require("copilot_cmp").setup() -- https://github.com/zbirenbaum/copilot-cmp/blob/master/README.md#configuration
-        end, 100)
+        end, 0)
       end,
+    },
+    {
+      "ggandor/leap.nvim",
+      name = "leap",
+      config = function()
+        require("leap").add_default_mappings()
+      end,
+    },
+    {
+        'ojroques/nvim-osc52',
+        config = function()
+          require('osc52').setup()
+          local copy = function(lines, _) require('osc52').copy(table.concat(lines, '\n')) end
+          local paste = function() return { vim.fn.split(vim.fn.getreg(''), '\n'), vim.fn.getregtype('') } end
+          vim.g.clipboard = {
+            name = 'osc52',
+            copy = { ['+'] = copy, ['*'] = copy },
+            paste = { ['+'] = paste, ['*'] = paste },
+          }
+          vim.api.nvim_create_autocmd('TextYankPost', { callback = function() vim.highlight.on_yank() end })
+        end
     }
 }
 
