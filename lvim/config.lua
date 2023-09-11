@@ -10,7 +10,9 @@ vim.opt.listchars:append "eol:↴"
 vim.opt.listchars:append "space:·"
 vim.opt.listchars:append "tab:<~"
 vim.opt.list = true
-vim.wo.colorcolumn = '79'
+vim.opt.cursorline = true
+lvim.transparent_window=true
+
 -- general
 lvim.log.level = "info"
 lvim.format_on_save = {
@@ -82,7 +84,6 @@ require("lvim.lsp.manager").setup("clangd", opts)
 -- lvim.builtin.which_key.mappings["P"] = { "<cmd>Telescope projects<CR>", "Projects" }
 
 -- -- Change theme settings
--- lvim.colorscheme = "lunar"
 
 lvim.builtin.alpha.active = true
 lvim.builtin.alpha.mode = "dashboard"
@@ -113,7 +114,12 @@ lvim.plugins = {
         end
     },
     {
-      "rcarriga/nvim-notify"
+      "rcarriga/nvim-notify",
+      config = function()
+        require("notify").setup({
+        background_colour = "#000000",
+      })
+      end,
     },
     {
       "MunifTanjim/nui.nvim"
@@ -181,20 +187,38 @@ lvim.plugins = {
     },
     {
         'ojroques/nvim-osc52',
+        -- config = function()
+        --   require('osc52').setup()
+        --   local copy = function(lines, _) require('osc52').copy(table.concat(lines, '\n')) end
+        --   local paste = function() return { vim.fn.split(vim.fn.getreg(''), '\n'), vim.fn.getregtype('') } end
+        --   vim.g.clipboard = {
+        --     name = 'osc52',
+        --     copy = { ['+'] = copy, ['*'] = copy },
+        --     paste = { ['+'] = paste, ['*'] = paste },
+        --   }
+        --   vim.api.nvim_create_autocmd('TextYankPost', { callback = function() vim.highlight.on_yank() end })
+        -- end
+    },
+    {
+      'navarasu/onedark.nvim'
+    },
+    {
+      "HiPhish/nvim-ts-rainbow2",
+      -- Bracket pair rainbow colorize
+      lazy = true,
+      event = { "User FileOpened" },
+    },
+    {
+        "kylechui/nvim-surround",
+        lazy = true,
+        keys = { "cs", "ds", "ys" },
         config = function()
-          require('osc52').setup()
-          local copy = function(lines, _) require('osc52').copy(table.concat(lines, '\n')) end
-          local paste = function() return { vim.fn.split(vim.fn.getreg(''), '\n'), vim.fn.getregtype('') } end
-          vim.g.clipboard = {
-            name = 'osc52',
-            copy = { ['+'] = copy, ['*'] = copy },
-            paste = { ['+'] = paste, ['*'] = paste },
-          }
-          vim.api.nvim_create_autocmd('TextYankPost', { callback = function() vim.highlight.on_yank() end })
-        end
-    }
+            require("nvim-surround").setup({})
+        end,
+    },
 }
 
+lvim.builtin.treesitter.rainbow.enable = true
 lvim.colorscheme = 'tokyonight-night'
 
 local dap = require('dap')
@@ -302,3 +326,6 @@ dap.configurations.c = dap.configurations.cpp
 --     require("nvim-treesitter.highlight").attach(0, "bash")
 --   end,
 -- })
+
+-- lvim.colorscheme = "onedark"
+-- vim.cmd("hi SignColumn guibg=none")
