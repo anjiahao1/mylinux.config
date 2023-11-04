@@ -11,8 +11,7 @@ vim.opt.listchars:append "space:·"
 vim.opt.listchars:append "tab:<~"
 vim.opt.list = true
 vim.opt.cursorline = true
-lvim.transparent_window=true
-
+lvim.transparent_window = true
 -- general
 lvim.log.level = "info"
 lvim.format_on_save = {
@@ -34,6 +33,8 @@ lvim.keys.normal_mode["<A-l>"] = ":BufferLineCycleNext<CR>"
 lvim.keys.normal_mode["<leader>%"] = ":vsp<CR>"
 lvim.keys.normal_mode["<leader>\""] = ":sp<CR>"
 lvim.keys.normal_mode["<leader>x"] = ":q<CR>"
+lvim.keys.normal_mode["j"] = "<Plug>(accelerated_jk_gj)"
+lvim.keys.normal_mode["k"] = "<Plug>(accelerated_jk_gk)"
 
 lvim.keys.insert_mode["<A-h>"] = "<Esc>:BufferLineCyclePrev<CR>"
 lvim.keys.insert_mode["<A-l>"] = "<Esc>:BufferLineCycleNext<CR>"
@@ -43,37 +44,43 @@ lvim.keys.visual_mode["L"] = "$"
 lvim.keys.visual_mode["H"] = "^"
 
 lvim.builtin.which_key.mappings["lr"] = {
-  { "<cmd>lua require('renamer').rename()<cr>", "Rename" },
+    { "<cmd>lua require('renamer').rename()<cr>", "Rename" },
 }
 
 lvim.builtin.which_key.mappings["lg"] = {
-  { "<cmd>GitBlameToggle<cr>", "Gitblame" },
+    { "<cmd>GitBlameToggle<cr>", "Gitblame" },
 }
 
-vim.list_extend(lvim.lsp.automatic_configuration.skipped_servers, { "clangd"})
+vim.list_extend(lvim.lsp.automatic_configuration.skipped_servers, { "clangd", "pyright" })
 
 local clangd_flags = {
-  "--fallback-style=google",
-  "--background-index",
-  "-j=12",
-  "--all-scopes-completion",
-  "--pch-storage=disk",
-  "--clang-tidy",
-  "--log=error",
-  "--completion-style=detailed",
-  "--header-insertion=iwyu",
-  "--header-insertion-decorators",
-  "--enable-config",
-  "--offset-encoding=utf-16",
-  "--ranking-model=heuristics",
-  "--folding-ranges",
+    "--fallback-style=google",
+    "--background-index",
+    "-j=12",
+    "--all-scopes-completion",
+    "--pch-storage=disk",
+    "--clang-tidy",
+    "--log=error",
+    "--completion-style=detailed",
+    "--header-insertion=iwyu",
+    "--header-insertion-decorators",
+    "--enable-config",
+    "--offset-encoding=utf-16",
+    "--ranking-model=heuristics",
+    "--folding-ranges",
 }
 
 local clangd_bin = "clangd"
 
 local opts = {
-  cmd = { clangd_bin, unpack(clangd_flags) },
+    cmd = { clangd_bin, unpack(clangd_flags) },
 }
+-- add `pyright` to `skipped_servers` list
+-- remove `jedi_language_server` from `skipped_servers` list
+lvim.lsp.automatic_configuration.skipped_servers = vim.tbl_filter(function(server)
+      return server ~= "pylsp"
+    end, lvim.lsp.automatic_configuration.skipped_servers)
+
 require("lvim.lsp.manager").setup("clangd", opts)
 
 -- lvim.keys.normal_mode["<S-l>"] = ":BufferLineCycleNext<CR>"
@@ -90,6 +97,7 @@ lvim.builtin.alpha.mode = "dashboard"
 lvim.builtin.terminal.active = true
 lvim.builtin.nvimtree.setup.view.side = "left"
 lvim.builtin.nvimtree.setup.renderer.icons.show.git = false
+
 
 -- Automatically install missing parsers when entering buffer
 lvim.builtin.treesitter.auto_install = true
@@ -114,15 +122,15 @@ lvim.plugins = {
         end
     },
     {
-      "rcarriga/nvim-notify",
-      config = function()
-        require("notify").setup({
-        background_colour = "#000000",
-      })
-      end,
+        "rcarriga/nvim-notify",
+        config = function()
+          require("notify").setup({
+              background_colour = "#000000",
+          })
+        end,
     },
     {
-      "MunifTanjim/nui.nvim"
+        "MunifTanjim/nui.nvim"
     },
     {
         "folke/noice.nvim",
@@ -148,84 +156,131 @@ lvim.plugins = {
         end,
     },
     {
-      "glepnir/zephyr-nvim"
+        "glepnir/zephyr-nvim"
     },
     {
-      "rebelot/kanagawa.nvim"
+        "rebelot/kanagawa.nvim"
     },
     {
-      'jacoborus/tender.vim'
+        'jacoborus/tender.vim'
     },
     {
-      'folke/tokyonight.nvim'
+        'folke/tokyonight.nvim'
     },
     {
-      'theHamsta/nvim-dap-virtual-text',
+        'theHamsta/nvim-dap-virtual-text',
         config = function()
-            require("nvim-dap-virtual-text").setup()
+          require("nvim-dap-virtual-text").setup()
         end
     },
     {
-      "zbirenbaum/copilot.lua"
+        "zbirenbaum/copilot.lua"
     },
     {
-      "zbirenbaum/copilot-cmp",
-      event = "InsertEnter",
-      config = function()
-        vim.defer_fn(function()
-          require("copilot").setup() -- https://github.com/zbirenbaum/copilot.lua/blob/master/README.md#setup-and-configuration
-          require("copilot_cmp").setup() -- https://github.com/zbirenbaum/copilot-cmp/blob/master/README.md#configuration
-        end, 0)
-      end,
+        "zbirenbaum/copilot-cmp",
+        event = { "InsertEnter", "LspAttach" },
+        config = function()
+          vim.defer_fn(function()
+            require("copilot").setup() -- https://github.com/zbirenbaum/copilot.lua/blob/master/README.md#setup-and-configuration
+            require("copilot_cmp").setup() -- https://github.com/zbirenbaum/copilot-cmp/blob/master/README.md#configuration
+          end, 0)
+        end,
     },
     {
-      "ggandor/leap.nvim",
-      name = "leap",
-      config = function()
-        require("leap").add_default_mappings()
-      end,
+        "ggandor/leap.nvim",
+        name = "leap",
+        config = function()
+          require("leap").add_default_mappings()
+        end,
     },
     {
         'ojroques/nvim-osc52',
-        -- config = function()
-        --   require('osc52').setup()
-        --   local copy = function(lines, _) require('osc52').copy(table.concat(lines, '\n')) end
-        --   local paste = function() return { vim.fn.split(vim.fn.getreg(''), '\n'), vim.fn.getregtype('') } end
-        --   vim.g.clipboard = {
-        --     name = 'osc52',
-        --     copy = { ['+'] = copy, ['*'] = copy },
-        --     paste = { ['+'] = paste, ['*'] = paste },
-        --   }
-        --   vim.api.nvim_create_autocmd('TextYankPost', { callback = function() vim.highlight.on_yank() end })
-        -- end
+        config = function()
+        require('osc52').setup()
+        if os.getenv("SSH_CONNECTION") then
+            local copy = function(lines, _) require('osc52').copy(table.concat(lines, '\n')) end
+            local paste = function() return { vim.fn.split(vim.fn.getreg(''), '\n'), vim.fn.getregtype('') } end
+            vim.g.clipboard = {
+              name = 'osc52',
+              copy = { ['+'] = copy, ['*'] = copy },
+              paste = { ['+'] = paste, ['*'] = paste },
+            }
+            vim.api.nvim_create_autocmd('TextYankPost', { callback = function() vim.highlight.on_yank() end })
+          end
+        end
     },
     {
-      'navarasu/onedark.nvim'
+        'navarasu/onedark.nvim'
     },
     {
-      "HiPhish/nvim-ts-rainbow2",
-      -- Bracket pair rainbow colorize
-      lazy = true,
-      event = { "User FileOpened" },
+        "HiPhish/rainbow-delimiters.nvim",
+        -- Bracket pair rainbow colorize
+        lazy = true,
+        event = { "User FileOpened" },
     },
     {
         "kylechui/nvim-surround",
         lazy = true,
         keys = { "cs", "ds", "ys" },
         config = function()
-            require("nvim-surround").setup({})
+          require("nvim-surround").setup({})
         end,
     },
+    {
+        'rainbowhxch/accelerated-jk.nvim'
+    },
+    {
+        "ahmedkhalf/lsp-rooter.nvim",
+        event = "BufRead",
+        config = function()
+          require("lsp-rooter").setup()
+        end,
+    },
+    {
+        "ethanholz/nvim-lastplace",
+        config = function()
+          require("nvim-lastplace").setup({
+              lastplace_ignore_buftype = { "quickfix", "nofile", "help" },
+              lastplace_ignore_filetype = {
+                  "gitcommit", "gitrebase", "svn", "hgcommit",
+              },
+          })
+        end,
+    },
+    {
+        "rmagatti/goto-preview",
+        config = function()
+          require('goto-preview').setup {
+              width = 120, -- Width of the floating window
+              height = 25, -- Height of the floating window
+              default_mappings = false, -- Bind default mappings
+              debug = false, -- Print debug information
+              opacity = nil, -- 0-100 opacity level of the floating window where 100 is fully transparent.
+              post_open_hook = nil, -- A function taking two arguments, a buffer and a window to be ran as a hook.
+              -- You can use "default_mappings = true" setup option
+              -- Or explicitly set keybindings
+              vim.cmd("nnoremap gpd <cmd>lua require('goto-preview').goto_preview_definition()<CR>"),
+              vim.cmd("nnoremap gpi <cmd>lua require('goto-preview').goto_preview_implementation()<CR>"),
+              vim.cmd("nnoremap gP <cmd>lua require('goto-preview').close_all_win()<CR>"),
+          }
+        end
+    },
+    {
+      "EdenEast/nightfox.nvim"
+    },
+    {
+      "Mofiqul/vscode.nvim"
+    }
 }
 
 lvim.builtin.treesitter.rainbow.enable = true
-lvim.colorscheme = 'tokyonight-night'
+lvim.colorscheme = 'tokyonight'
 
 local dap = require('dap')
 dap.adapters.cppdbg = {
-  id = 'cppdbg',
-  type = 'executable',
-  command = '/home/ajh/work/extension/debugAdapters/bin/OpenDebugAD7'
+    id = 'cppdbg',
+    type = 'executable',
+    command = '/home/ajh/work/extension/debugAdapters/bin/OpenDebugAD7'
 }
 
 dap.configurations.cpp = {
@@ -234,7 +289,7 @@ dap.configurations.cpp = {
         type = "cppdbg",
         request = "launch",
         program = function()
-            return vim.fn.input("Path to executable: ", vim.fn.getcwd() .. "/", "file")
+          return vim.fn.input("Path to executable: ", vim.fn.getcwd() .. "/", "file")
         end,
         cwd = "${workspaceFolder}",
         stopAtEntry = true,
@@ -242,6 +297,9 @@ dap.configurations.cpp = {
 }
 
 dap.configurations.c = dap.configurations.cpp
+lvim.builtin.bigfile.config = {
+    filesize = 5,
+}
 
 -- vim.g.copilot_tab_fallback = ""
 -- local cmp = require "cmp"
@@ -327,5 +385,5 @@ dap.configurations.c = dap.configurations.cpp
 --   end,
 -- })
 
--- lvim.colorscheme = "onedark"
+-- lvim.colorscheme = ""
 -- vim.cmd("hi SignColumn guibg=none")

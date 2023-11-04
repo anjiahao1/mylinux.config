@@ -2,36 +2,17 @@ local wezterm = require 'wezterm'
 local home = os.getenv("HOME")
 return {
     hide_tab_bar_if_only_one_tab = true,
-    color_scheme = "tokyonight",
+    color_scheme = "tokyonight_night",
     font = wezterm.font('JetBrainsMono Nerd Font', {weight = 'Bold'}),
-    font_size = 14.0,
+    font_size = 13.8,
     leader = { key = "x", mods = "CTRL" },
     check_for_updates = false,
-
-    -- background = {
-    --   -- This is the deepest/back-most layer. It will be rendered first
-    --   {
-    --     source = {
-    --       File = home .. '/wallpaper/OceanGirl.jpg',
-    --     },
-    --     -- The texture tiles vertically but not horizontally.
-    --     -- When we repeat it, mirror it so that it appears "more seamless".
-    --     -- An alternative to this is to set `width = "100%"` and have
-    --     -- it stretch across the display
-    --     repeat_x = 'NoRepeat',
-    --     repeat_y = 'NoRepeat',
-    --     hsb = {
-    --         -- Darken the background image by reducing it to 1/3rd
-    --         brightness = 0.05,
-    --         -- You can adjust the hue by scaling its value.
-    --         -- a multiplier of 1.0 leaves the value unchanged.
-    --         hue = 1.0,
-    --         -- You can adjust the saturation also.
-    --         saturation = 1.0,
-    --     },
-    --     horizontal_align = 'Center',
-    --   },
-    -- },
+    window_padding = {
+      left = 0,
+      right = 0,
+      top = 0,
+      bottom = 0,
+    },
 
     keys = {
         { key = "o",   mods = "LEADER",       action = wezterm.action.ToggleFullScreen },
