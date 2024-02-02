@@ -2,11 +2,21 @@ local wezterm = require 'wezterm'
 local home = os.getenv("HOME")
 return {
     hide_tab_bar_if_only_one_tab = true,
-    color_scheme = "tokyonight_night",
+    color_scheme = 'One Half Black (Gogh)',
+    -- color_scheme = 'tokyonight',
+    -- color_scheme = 'Ubuntu',
+    -- color_scheme = 'Roya',
     font = wezterm.font('JetBrainsMono Nerd Font', {weight = 'Bold'}),
-    font_size = 13.8,
-    leader = { key = "x", mods = "CTRL" },
+    -- font = wezterm.font('FantasqueSansMNerdFontMono', {weight = 'Bold'}),
+    -- font = wezterm.font('Monaspace Radon Var', {weight = 1600}),
+    -- font = wezterm.font("Monaspace Krypton Var", {weight=1600}),
+    font_size = 10,
+    colors = {
+      cursor_fg = "black",
+    },
+    leader = { key = "e", mods = "CTRL" },
     check_for_updates = false,
+    hide_mouse_cursor_when_typing = true,
     window_padding = {
       left = 0,
       right = 0,
@@ -17,7 +27,7 @@ return {
     keys = {
         { key = "o",   mods = "LEADER",       action = wezterm.action.ToggleFullScreen },
         { key = "`",   mods = "LEADER|CTRL",  action = wezterm.action { SendString = "`" } },
-        { key = "v",   mods = "CTRL",         action = wezterm.action { PasteFrom = "Clipboard" } },
+        { key = "V",   mods = "CTRL",         action = wezterm.action { PasteFrom = "Clipboard" } },
         { key = "\"",   mods = "LEADER|SHIFT",       action = wezterm.action { SplitVertical = { domain = "CurrentPaneDomain" } } },
         { key = "%",   mods = "LEADER|SHIFT",       action = wezterm.action { SplitHorizontal = { domain = "CurrentPaneDomain" } } },
         { key = "c",   mods = "LEADER",       action = wezterm.action { SpawnTab = "CurrentPaneDomain" } },

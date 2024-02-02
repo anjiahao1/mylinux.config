@@ -12,6 +12,7 @@ vim.opt.listchars:append "tab:<~"
 vim.opt.list = true
 vim.opt.cursorline = true
 lvim.transparent_window = true
+
 -- general
 lvim.log.level = "info"
 lvim.format_on_save = {
@@ -56,7 +57,7 @@ vim.list_extend(lvim.lsp.automatic_configuration.skipped_servers, { "clangd", "p
 local clangd_flags = {
     "--fallback-style=google",
     "--background-index",
-    "-j=12",
+    "-j=20",
     "--all-scopes-completion",
     "--pch-storage=disk",
     "--clang-tidy",
@@ -126,6 +127,9 @@ lvim.plugins = {
         config = function()
           require("notify").setup({
               background_colour = "#000000",
+              fps = 60,
+              render = "minimal",
+              timeout = 2500,
           })
         end,
     },
@@ -270,11 +274,14 @@ lvim.plugins = {
     },
     {
       "Mofiqul/vscode.nvim"
-    }
+    },
 }
 
 lvim.builtin.treesitter.rainbow.enable = true
 lvim.colorscheme = 'tokyonight'
+-- lvim.colorscheme = 'nightfox'
+-- lvim.colorscheme = 'kanagawa'
+-- lvim.colorscheme = 'vscode'
 
 local dap = require('dap')
 dap.adapters.cppdbg = {
