@@ -8,9 +8,9 @@ vim.opt.tabstop = 2
 vim.opt.relativenumber = true
 vim.opt.listchars:append "eol:↴"
 vim.opt.listchars:append "space:·"
-vim.opt.listchars:append "tab:<~"
+vim.opt.listchars:append "tab:~~"
 vim.opt.list = true
-vim.opt.cursorline = true
+vim.opt.cursorline = false
 lvim.transparent_window = true
 
 -- general
@@ -34,8 +34,11 @@ lvim.keys.normal_mode["<A-l>"] = ":BufferLineCycleNext<CR>"
 lvim.keys.normal_mode["<leader>%"] = ":vsp<CR>"
 lvim.keys.normal_mode["<leader>\""] = ":sp<CR>"
 lvim.keys.normal_mode["<leader>x"] = ":q<CR>"
+
+if vim.loop.getuid() ~= 0 then
 lvim.keys.normal_mode["j"] = "<Plug>(accelerated_jk_gj)"
 lvim.keys.normal_mode["k"] = "<Plug>(accelerated_jk_gk)"
+end
 
 lvim.keys.insert_mode["<A-h>"] = "<Esc>:BufferLineCyclePrev<CR>"
 lvim.keys.insert_mode["<A-l>"] = "<Esc>:BufferLineCycleNext<CR>"
@@ -275,13 +278,25 @@ lvim.plugins = {
     {
       "Mofiqul/vscode.nvim"
     },
+    {
+      "projekt0n/github-nvim-theme"
+    },
+    {
+      "catppuccin/nvim", name = "catppuccin", priority = 1000
+    },
+    {
+      "Mofiqul/dracula.nvim"
+    }
 }
 
 lvim.builtin.treesitter.rainbow.enable = true
-lvim.colorscheme = 'tokyonight'
+-- lvim.colorscheme = 'tokyonight'
 -- lvim.colorscheme = 'nightfox'
 -- lvim.colorscheme = 'kanagawa'
 -- lvim.colorscheme = 'vscode'
+-- lvim.colorscheme = 'github_dark_default'
+-- lvim.colorscheme = 'catppuccin-macchiato'
+lvim.colorscheme = 'dracula'
 
 local dap = require('dap')
 dap.adapters.cppdbg = {
@@ -289,23 +304,40 @@ dap.adapters.cppdbg = {
     type = 'executable',
     command = '/home/ajh/work/extension/debugAdapters/bin/OpenDebugAD7'
 }
+require('dap.ext.vscode').load_launchjs(nil, { cppdbg = {'c', 'cpp'} })
+require('dap.ext.vscode').type_to_filetypes = {
+  gdb = {'rust', 'c', 'cpp'},
+}
 
 dap.configurations.cpp = {
     {
         name = "Launch file",
         type = "cppdbg",
         request = "launch",
+        MiMode = "gdb",
+        miDebuggerPath = "/usr/bin/gdb-multiarch",
+        miDebuggerServerAddress = "localhost:1234",
         program = function()
           return vim.fn.input("Path to executable: ", vim.fn.getcwd() .. "/", "file")
         end,
         cwd = "${workspaceFolder}",
         stopAtEntry = true,
-    }
+    },
 }
+
+-- local continue = function()
+--   print(vim.fn.getcwd())
+--   if vim.fn.filereadable('.vscode/launch.json') then
+--     print("find launch.json")
+--     require('dap.ext.vscode').load_launchjs()
+--   end  
+--   -- require('dap').continue()
+-- end
+-- lvim.lsp.buffer_mappings.normal_mode["<leader>dt"] = { continue, "Start/Continue debug" }
 
 dap.configurations.c = dap.configurations.cpp
 lvim.builtin.bigfile.config = {
-    filesize = 5,
+    filesize = 1,
 }
 
 -- vim.g.copilot_tab_fallback = ""

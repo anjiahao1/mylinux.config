@@ -2,18 +2,24 @@ local wezterm = require 'wezterm'
 local home = os.getenv("HOME")
 return {
     hide_tab_bar_if_only_one_tab = true,
-    color_scheme = 'One Half Black (Gogh)',
+    -- color_scheme = 'One Half Black (Gogh)',
     -- color_scheme = 'tokyonight',
     -- color_scheme = 'Ubuntu',
     -- color_scheme = 'Roya',
+    color_scheme = 'Dracula+',
     font = wezterm.font('JetBrainsMono Nerd Font', {weight = 'Bold'}),
     -- font = wezterm.font('FantasqueSansMNerdFontMono', {weight = 'Bold'}),
     -- font = wezterm.font('Monaspace Radon Var', {weight = 1600}),
     -- font = wezterm.font("Monaspace Krypton Var", {weight=1600}),
+    window_background_image_hsb = {
+      attachment = "Scroll",
+    },
+
     font_size = 10,
     colors = {
       cursor_fg = "black",
     },
+
     leader = { key = "e", mods = "CTRL" },
     check_for_updates = false,
     hide_mouse_cursor_when_typing = true,
