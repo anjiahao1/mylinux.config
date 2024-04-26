@@ -3,23 +3,31 @@ local home = os.getenv("HOME")
 return {
     hide_tab_bar_if_only_one_tab = true,
     -- color_scheme = 'One Half Black (Gogh)',
-    -- color_scheme = 'tokyonight',
+    color_scheme = 'tokyonight',
+    -- metadata = wezterm.color.load_scheme('/home/ajh/.config/wezterm/flexoki.toml'),
+    -- color_scheme = 'Catppuccin Mocha',
+    -- color_scheme = 'Flexoki Light',
     -- color_scheme = 'Ubuntu',
     -- color_scheme = 'Roya',
-    color_scheme = 'Dracula+',
+    -- color_scheme = 'Dracula+',
+    -- color_scheme = 'Github Dark',
+    -- color_scheme = 'hardhacker',
+    -- font = wezterm.font('JetBrainsMono Nerd Font'),
     font = wezterm.font('JetBrainsMono Nerd Font', {weight = 'Bold'}),
     -- font = wezterm.font('FantasqueSansMNerdFontMono', {weight = 'Bold'}),
     -- font = wezterm.font('Monaspace Radon Var', {weight = 1600}),
     -- font = wezterm.font("Monaspace Krypton Var", {weight=1600}),
-    window_background_image_hsb = {
-      attachment = "Scroll",
-    },
-
-    font_size = 10,
+    -- font = wezterm.font("Monaspace Argon", {weight=800, stretch="Normal"}),
+    -- font = wezterm.font("Monaspace Xenon", {weight="Black", stretch="Normal"}),
+    -- font = wezterm.font("JetBrainsMono Nerd Font Mono", {weight='Black'}),
+    -- font = wezterm.font("UbuntuMono Nerd Font Mono", {weight='Bold'}),
+    -- font = wezterm.font("SauceCodePro Nerd Font", {weight="Bold", stretch="Normal", style="Normal"}),
+    font_size = 11,
     colors = {
-      cursor_fg = "black",
+      cursor_bg = "white",
+      cursor_fg = "Black",
     },
-
+    default_cursor_style = 'SteadyUnderline',
     leader = { key = "e", mods = "CTRL" },
     check_for_updates = false,
     hide_mouse_cursor_when_typing = true,
@@ -30,6 +38,8 @@ return {
       bottom = 0,
     },
 
+    -- window_background_opacity = 0.85,
+    enable_wayland = false,
     keys = {
         { key = "o",   mods = "LEADER",       action = wezterm.action.ToggleFullScreen },
         { key = "`",   mods = "LEADER|CTRL",  action = wezterm.action { SendString = "`" } },
@@ -62,6 +72,34 @@ return {
         { key = "w",   mods = "ALT",          action = wezterm.action({ CopyTo = "Clipboard" }) },
         { key = "y",   mods = "CTRL",         action = wezterm.action({ PasteFrom = "Clipboard" }) },
         { key = "Tab", mods = "LEADER",       action = wezterm.action({ ActivateTabRelative = 1 }) },
+
+        { key = "1",   mods = "CTRL",       action = wezterm.action.Multiple
+                                            { wezterm.action.SendKey({ key = 'Space', mods = 'CTRL'}),
+                                              wezterm.action.SendKey({ key = '1'}),} },
+        { key = "2",   mods = "CTRL",       action = wezterm.action.Multiple
+                                            { wezterm.action.SendKey({ key = 'Space', mods = 'CTRL'}),
+                                              wezterm.action.SendKey({ key = '2'}),} },
+        { key = "3",   mods = "CTRL",       action = wezterm.action.Multiple
+                                            { wezterm.action.SendKey({ key = 'Space', mods = 'CTRL'}),
+                                              wezterm.action.SendKey({ key = '3'}),} },
+        { key = "4",   mods = "CTRL",       action = wezterm.action.Multiple
+                                            { wezterm.action.SendKey({ key = 'Space', mods = 'CTRL'}),
+                                              wezterm.action.SendKey({ key = '4'}),} },
+        { key = "5",   mods = "CTRL",       action = wezterm.action.Multiple
+                                            { wezterm.action.SendKey({ key = 'Space', mods = 'CTRL'}),
+                                              wezterm.action.SendKey({ key = '5'}),} },
+        { key = "6",   mods = "CTRL",       action = wezterm.action.Multiple
+                                            { wezterm.action.SendKey({ key = 'Space', mods = 'CTRL'}),
+                                              wezterm.action.SendKey({ key = '6'}),} },
+        { key = "7",   mods = "CTRL",       action = wezterm.action.Multiple
+                                            { wezterm.action.SendKey({ key = 'Space', mods = 'CTRL'}),
+                                              wezterm.action.SendKey({ key = '7'}),} },
+        { key = "8",   mods = "CTRL",       action = wezterm.action.Multiple
+                                            { wezterm.action.SendKey({ key = 'Space', mods = 'CTRL'}),
+                                              wezterm.action.SendKey({ key = '8'}),} },
+        { key = "9",   mods = "CTRL",       action = wezterm.action.Multiple
+                                            { wezterm.action.SendKey({ key = 'Space', mods = 'CTRL'}),
+                                              wezterm.action.SendKey({ key = '9'}),} },
     },
 
 }

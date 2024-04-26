@@ -10,7 +10,8 @@ vim.opt.listchars:append "eol:↴"
 vim.opt.listchars:append "space:·"
 vim.opt.listchars:append "tab:~~"
 vim.opt.list = true
-vim.opt.cursorline = false
+vim.opt.cursorline = true
+vim.opt.shell = "/bin/bash"
 lvim.transparent_window = true
 
 -- general
@@ -45,7 +46,7 @@ lvim.keys.insert_mode["<A-l>"] = "<Esc>:BufferLineCycleNext<CR>"
 lvim.keys.insert_mode["jj"] = "<Esc>"
 
 lvim.keys.visual_mode["L"] = "$"
-lvim.keys.visual_mode["H"] = "^"
+lvim.keys.visual_mode["H"] = "0"
 
 lvim.builtin.which_key.mappings["lr"] = {
     { "<cmd>lua require('renamer').rename()<cr>", "Rename" },
@@ -163,18 +164,6 @@ lvim.plugins = {
         end,
     },
     {
-        "glepnir/zephyr-nvim"
-    },
-    {
-        "rebelot/kanagawa.nvim"
-    },
-    {
-        'jacoborus/tender.vim'
-    },
-    {
-        'folke/tokyonight.nvim'
-    },
-    {
         'theHamsta/nvim-dap-virtual-text',
         config = function()
           require("nvim-dap-virtual-text").setup()
@@ -215,9 +204,6 @@ lvim.plugins = {
             vim.api.nvim_create_autocmd('TextYankPost', { callback = function() vim.highlight.on_yank() end })
           end
         end
-    },
-    {
-        'navarasu/onedark.nvim'
     },
     {
         "HiPhish/rainbow-delimiters.nvim",
@@ -273,6 +259,24 @@ lvim.plugins = {
         end
     },
     {
+      "glepnir/zephyr-nvim"
+    },
+    {
+      "rebelot/kanagawa.nvim"
+    },
+    {
+      'jacoborus/tender.vim'
+    },
+    {
+      'folke/tokyonight.nvim'
+    },
+    {
+      'navarasu/onedark.nvim'
+    },
+    {
+      'psliwka/vim-smoothie',
+    },
+    {
       "EdenEast/nightfox.nvim"
     },
     {
@@ -286,17 +290,24 @@ lvim.plugins = {
     },
     {
       "Mofiqul/dracula.nvim"
+    },
+    {
+      "kepano/flexoki-neovim"
     }
 }
 
-lvim.builtin.treesitter.rainbow.enable = true
+lvim.builtin.treesitter.rainbow.enable = false
 -- lvim.colorscheme = 'tokyonight'
+-- lvim.colorscheme = 'tender'
+-- lvim.colorscheme = 'onedark'
+lvim.colorscheme = 'dracula'
 -- lvim.colorscheme = 'nightfox'
 -- lvim.colorscheme = 'kanagawa'
 -- lvim.colorscheme = 'vscode'
 -- lvim.colorscheme = 'github_dark_default'
 -- lvim.colorscheme = 'catppuccin-macchiato'
-lvim.colorscheme = 'dracula'
+-- lvim.colorscheme = 'catppuccin-mocha'
+-- lvim.colorscheme = 'flexoki-light'
 
 local dap = require('dap')
 dap.adapters.cppdbg = {
@@ -338,6 +349,16 @@ dap.configurations.cpp = {
 dap.configurations.c = dap.configurations.cpp
 lvim.builtin.bigfile.config = {
     filesize = 1,
+    features = {
+      "indent_blankline",
+      "illuminate",
+      "lsp",
+      "treesitter",
+      "syntax",
+      "matchparen",
+      "vimopts",
+      "filetype",
+    }
 }
 
 -- vim.g.copilot_tab_fallback = ""
