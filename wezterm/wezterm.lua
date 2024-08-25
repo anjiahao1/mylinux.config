@@ -4,7 +4,6 @@ return {
     hide_tab_bar_if_only_one_tab = true,
     -- color_scheme = 'One Half Black (Gogh)',
     color_scheme = 'tokyonight',
-    -- metadata = wezterm.color.load_scheme('/home/ajh/.config/wezterm/flexoki.toml'),
     -- color_scheme = 'Catppuccin Mocha',
     -- color_scheme = 'Flexoki Light',
     -- color_scheme = 'Ubuntu',
@@ -21,8 +20,9 @@ return {
     -- font = wezterm.font("Monaspace Xenon", {weight="Black", stretch="Normal"}),
     -- font = wezterm.font("JetBrainsMono Nerd Font Mono", {weight='Black'}),
     -- font = wezterm.font("UbuntuMono Nerd Font Mono", {weight='Bold'}),
+    -- font = wezterm.font("FiraCode Nerd Font", {weight="Bold"}),
     -- font = wezterm.font("SauceCodePro Nerd Font", {weight="Bold", stretch="Normal", style="Normal"}),
-    font_size = 11,
+    font_size = 16,
     colors = {
       cursor_bg = "white",
       cursor_fg = "Black",
@@ -37,9 +37,32 @@ return {
       top = 0,
       bottom = 0,
     },
+    mouse_bindings = {
+        {
+          event = { Down = { streak = 1, button = 'Right' } },
+          mods = 'NONE',
+          action =  wezterm.action.SendString 'woot',
+        },
+
+        -- Change the default click behavior so that it only selects
+        -- text and doesn't open hyperlinks
+        {
+          event = { Up = { streak = 1, button = 'Left' } },
+          mods = 'NONE',
+          action = wezterm.action.CompleteSelection 'ClipboardAndPrimarySelection',
+        },
+
+        -- and make CTRL-Click open hyperlinks
+        {
+          event = { Up = { streak = 1, button = 'Left' } },
+          mods = 'CTRL',
+          action = wezterm.action.OpenLinkAtMouseCursor,
+        },
+    },
 
     -- window_background_opacity = 0.85,
-    enable_wayland = false,
+    enable_wayland = true,
+    front_end = "OpenGL",
     keys = {
         { key = "o",   mods = "LEADER",       action = wezterm.action.ToggleFullScreen },
         { key = "`",   mods = "LEADER|CTRL",  action = wezterm.action { SendString = "`" } },
@@ -100,6 +123,9 @@ return {
         { key = "9",   mods = "CTRL",       action = wezterm.action.Multiple
                                             { wezterm.action.SendKey({ key = 'Space', mods = 'CTRL'}),
                                               wezterm.action.SendKey({ key = '9'}),} },
+        { key = "Delete", mods = "CTRL",       action = wezterm.action.Multiple
+                                            { wezterm.action.SendKey({ key = 'Space', mods = 'CTRL'}),
+                                              wezterm.action.SendKey({ key = 'x'})} },
     },
 
 }

@@ -6,18 +6,21 @@
 vim.opt.shiftwidth = 2
 vim.opt.tabstop = 2
 vim.opt.relativenumber = true
-vim.opt.listchars:append "eol:↴"
-vim.opt.listchars:append "space:·"
+-- vim.opt.listchars:append "eol:↴"
+-- vim.opt.listchars:append "space:."
 vim.opt.listchars:append "tab:~~"
 vim.opt.list = true
-vim.opt.cursorline = true
+vim.opt.cursorline = false
 vim.opt.shell = "/bin/bash"
+vim.opt.spelllang = { "en"}
+
 lvim.transparent_window = true
 
 -- general
 lvim.log.level = "info"
+
 lvim.format_on_save = {
-    enabled = true,
+    enabled = false,
     pattern = "*.lua",
     timeout = 1000,
 }
@@ -34,7 +37,7 @@ lvim.keys.normal_mode["<A-h>"] = ":BufferLineCyclePrev<CR>"
 lvim.keys.normal_mode["<A-l>"] = ":BufferLineCycleNext<CR>"
 lvim.keys.normal_mode["<leader>%"] = ":vsp<CR>"
 lvim.keys.normal_mode["<leader>\""] = ":sp<CR>"
-lvim.keys.normal_mode["<leader>x"] = ":q<CR>"
+lvim.keys.normal_mode["<leader>si"] = ":Telescope find_files no_ignore=true<CR>"
 
 if vim.loop.getuid() ~= 0 then
 lvim.keys.normal_mode["j"] = "<Plug>(accelerated_jk_gj)"
@@ -56,6 +59,23 @@ lvim.builtin.which_key.mappings["lg"] = {
     { "<cmd>GitBlameToggle<cr>", "Gitblame" },
 }
 
+function copy_file_and_line()
+  -- 获取当前文件名
+  local filename = vim.fn.expand('%:p')
+  -- 获取当前光标行号
+  local linenr = vim.fn.line('.')
+  -- 构建文件名和行号字符串
+  local result = string.format("%s:%d", filename, linenr)
+  -- 将结果放入粘贴寄存器
+  vim.fn.setreg('+', result)
+  -- 提示用户
+  print('Copied to clipboard: ' .. result)
+end
+
+lvim.keys.normal_mode["<leader>gy"] = ":lua copy_file_and_line()<CR>"
+
+-- 创建快捷键绑定
+vim.api.nvim_set_keymap('n', '<Leader>c', ':lua copy_file_and_line()<CR>', { noremap = true, silent = true })
 vim.list_extend(lvim.lsp.automatic_configuration.skipped_servers, { "clangd", "pyright" })
 
 local clangd_flags = {
@@ -96,17 +116,26 @@ require("lvim.lsp.manager").setup("clangd", opts)
 -- lvim.builtin.which_key.mappings["P"] = { "<cmd>Telescope projects<CR>", "Projects" }
 
 -- -- Change theme settings
-
+--
 lvim.builtin.alpha.active = true
 lvim.builtin.alpha.mode = "dashboard"
 lvim.builtin.terminal.active = true
 lvim.builtin.nvimtree.setup.view.side = "left"
 lvim.builtin.nvimtree.setup.renderer.icons.show.git = false
 
-
 -- Automatically install missing parsers when entering buffer
 lvim.builtin.treesitter.auto_install = true
 lvim.format_on_save = false;
+
+local function check_file_size()
+    local file_size = vim.fn.getfsize(vim.fn.expand('%'))
+    if file_size > 1024*1024 then
+        return false
+    else
+        return true
+    end
+end
+
 lvim.plugins = {
     {
         "f-person/git-blame.nvim",
@@ -124,7 +153,7 @@ lvim.plugins = {
         branch = 'master',
         config = function()
           require('renamer').setup()
-        end
+        end,
     },
     {
         "rcarriga/nvim-notify",
@@ -167,10 +196,11 @@ lvim.plugins = {
         'theHamsta/nvim-dap-virtual-text',
         config = function()
           require("nvim-dap-virtual-text").setup()
-        end
+        end,
     },
     {
-        "zbirenbaum/copilot.lua"
+        "zbirenbaum/copilot.lua",
+         enabled = check_file_size()
     },
     {
         "zbirenbaum/copilot-cmp",
@@ -181,6 +211,7 @@ lvim.plugins = {
             require("copilot_cmp").setup() -- https://github.com/zbirenbaum/copilot-cmp/blob/master/README.md#configuration
           end, 0)
         end,
+        enabled = check_file_size()
     },
     {
         "ggandor/leap.nvim",
@@ -188,22 +219,6 @@ lvim.plugins = {
         config = function()
           require("leap").add_default_mappings()
         end,
-    },
-    {
-        'ojroques/nvim-osc52',
-        config = function()
-        require('osc52').setup()
-        if os.getenv("SSH_CONNECTION") then
-            local copy = function(lines, _) require('osc52').copy(table.concat(lines, '\n')) end
-            local paste = function() return { vim.fn.split(vim.fn.getreg(''), '\n'), vim.fn.getregtype('') } end
-            vim.g.clipboard = {
-              name = 'osc52',
-              copy = { ['+'] = copy, ['*'] = copy },
-              paste = { ['+'] = paste, ['*'] = paste },
-            }
-            vim.api.nvim_create_autocmd('TextYankPost', { callback = function() vim.highlight.on_yank() end })
-          end
-        end
     },
     {
         "HiPhish/rainbow-delimiters.nvim",
@@ -256,8 +271,27 @@ lvim.plugins = {
               vim.cmd("nnoremap gpi <cmd>lua require('goto-preview').goto_preview_implementation()<CR>"),
               vim.cmd("nnoremap gP <cmd>lua require('goto-preview').close_all_win()<CR>"),
           }
-        end
+        end,
     },
+    -- {
+    --   "karb94/neoscroll.nvim",
+    --   event = "WinScrolled",
+    --   config = function()
+    --   require('neoscroll').setup({
+    --         -- All these keys will be mapped to their corresponding default scrolling animation
+    --         mappings = {'<C-u>', '<C-d>', '<C-b>', '<C-f>',
+    --         '<C-y>', '<C-e>', 'zt', 'zz', 'zb'},
+    --         hide_cursor = true,          -- Hide cursor while scrolling
+    --         stop_eof = true,             -- Stop at <EOF> when scrolling downwards
+    --         use_local_scrolloff = false, -- Use the local scope of scrolloff instead of the global scope
+    --         respect_scrolloff = false,   -- Stop scrolling when the cursor reaches the scrolloff margin of the file
+    --         cursor_scrolls_alone = true, -- The cursor will keep on scrolling even if the window cannot scroll further
+    --         easing_function = nil,        -- Default easing function
+    --         pre_hook = nil,              -- Function to run before the scrolling animation starts
+    --         post_hook = nil,              -- Function to run after the scrolling animation ends
+    --         })
+    --   end
+    -- },
     {
       "glepnir/zephyr-nvim"
     },
@@ -272,9 +306,6 @@ lvim.plugins = {
     },
     {
       'navarasu/onedark.nvim'
-    },
-    {
-      'psliwka/vim-smoothie',
     },
     {
       "EdenEast/nightfox.nvim"
@@ -293,21 +324,38 @@ lvim.plugins = {
     },
     {
       "kepano/flexoki-neovim"
-    }
+    },
+    {
+      "oxfist/night-owl.nvim",
+    },
+    {
+      'ramojus/mellifluous.nvim',
+    },
+    {
+      'mhartington/oceanic-next'
+    },
+    {
+      'ku1ik/vim-monokai'
+    },
 }
 
-lvim.builtin.treesitter.rainbow.enable = false
--- lvim.colorscheme = 'tokyonight'
+lvim.builtin.treesitter.rainbow.enable = true
+
+-- lvim.colorscheme = 'night-owl'
+-- lvim.colorscheme = 'mellifluous'
+lvim.colorscheme = 'tokyonight'
 -- lvim.colorscheme = 'tender'
 -- lvim.colorscheme = 'onedark'
-lvim.colorscheme = 'dracula'
--- lvim.colorscheme = 'nightfox'
+-- lvim.colorscheme = 'dracula'
 -- lvim.colorscheme = 'kanagawa'
 -- lvim.colorscheme = 'vscode'
 -- lvim.colorscheme = 'github_dark_default'
 -- lvim.colorscheme = 'catppuccin-macchiato'
 -- lvim.colorscheme = 'catppuccin-mocha'
 -- lvim.colorscheme = 'flexoki-light'
+-- lvim.colorscheme = 'nightfox'
+-- lvim.colorscheme = 'OceanicNext'
+-- lvim.colorscheme = 'monokai'
 
 local dap = require('dap')
 dap.adapters.cppdbg = {
@@ -336,15 +384,17 @@ dap.configurations.cpp = {
     },
 }
 
--- local continue = function()
---   print(vim.fn.getcwd())
---   if vim.fn.filereadable('.vscode/launch.json') then
---     print("find launch.json")
---     require('dap.ext.vscode').load_launchjs()
---   end  
---   -- require('dap').continue()
--- end
--- lvim.lsp.buffer_mappings.normal_mode["<leader>dt"] = { continue, "Start/Continue debug" }
+vim.g.clipboard = {
+      name = 'OSC 52',
+      copy = {
+        ['+'] = require('vim.ui.clipboard.osc52').copy('+'),
+        ['*'] = require('vim.ui.clipboard.osc52').copy('*'),
+      },
+      paste = {
+        ['+'] = require('vim.ui.clipboard.osc52').paste('+'),
+        ['*'] = require('vim.ui.clipboard.osc52').paste('*'),
+      },
+}
 
 dap.configurations.c = dap.configurations.cpp
 lvim.builtin.bigfile.config = {
@@ -358,8 +408,11 @@ lvim.builtin.bigfile.config = {
       "matchparen",
       "vimopts",
       "filetype",
+      nvim_notify_disable,
     }
 }
+
+
 
 -- vim.g.copilot_tab_fallback = ""
 -- local cmp = require "cmp"
