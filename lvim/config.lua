@@ -76,7 +76,7 @@ lvim.keys.normal_mode["<leader>gy"] = ":lua copy_file_and_line()<CR>"
 
 -- 创建快捷键绑定
 vim.api.nvim_set_keymap('n', '<Leader>c', ':lua copy_file_and_line()<CR>', { noremap = true, silent = true })
-vim.list_extend(lvim.lsp.automatic_configuration.skipped_servers, { "clangd", "pyright" })
+vim.list_extend(lvim.lsp.automatic_configuration.skipped_servers, { "clangd", "pylsp"})
 
 local clangd_flags = {
     "--fallback-style=google",
@@ -100,11 +100,14 @@ local clangd_bin = "clangd"
 local opts = {
     cmd = { clangd_bin, unpack(clangd_flags) },
 }
+
+lvim.lsp.automatic_servers_installation = false
+
 -- add `pyright` to `skipped_servers` list
 -- remove `jedi_language_server` from `skipped_servers` list
-lvim.lsp.automatic_configuration.skipped_servers = vim.tbl_filter(function(server)
-      return server ~= "pylsp"
-    end, lvim.lsp.automatic_configuration.skipped_servers)
+-- lvim.lsp.automatic_configuration.skipped_servers = vim.tbl_filter(function(server)
+--       return server ~= "pylsp"
+--     end, lvim.lsp.automatic_configuration.skipped_servers)
 
 require("lvim.lsp.manager").setup("clangd", opts)
 
@@ -192,12 +195,12 @@ lvim.plugins = {
           })
         end,
     },
-    {
-        'theHamsta/nvim-dap-virtual-text',
-        config = function()
-          require("nvim-dap-virtual-text").setup()
-        end,
-    },
+    -- {
+    --     'theHamsta/nvim-dap-virtual-text',
+    --     config = function()
+    --       require("nvim-dap-virtual-text").setup()
+    --     end,
+    -- },
     {
         "zbirenbaum/copilot.lua",
          enabled = check_file_size()
@@ -213,6 +216,20 @@ lvim.plugins = {
         end,
         enabled = check_file_size()
     },
+    -- {
+    -- "Exafunction/codeium.nvim",
+    -- dependencies = {
+    --     "nvim-lua/plenary.nvim",
+    --     "hrsh7th/nvim-cmp",
+    -- },
+    -- config = function()
+    --     require("codeium").setup({
+    --     })
+    -- end
+    -- },
+    {
+      'onsails/lspkind.nvim'
+    },
     {
         "ggandor/leap.nvim",
         name = "leap",
@@ -220,12 +237,12 @@ lvim.plugins = {
           require("leap").add_default_mappings()
         end,
     },
-    {
-        "HiPhish/rainbow-delimiters.nvim",
-        -- Bracket pair rainbow colorize
-        lazy = true,
-        event = { "User FileOpened" },
-    },
+    -- {
+    --     "HiPhish/rainbow-delimiters.nvim",
+    --     -- Bracket pair rainbow colorize
+    --     lazy = true,
+    --     event = { "User FileOpened" },
+    -- },
     {
         "kylechui/nvim-surround",
         lazy = true,
@@ -237,13 +254,13 @@ lvim.plugins = {
     {
         'rainbowhxch/accelerated-jk.nvim'
     },
-    {
-        "ahmedkhalf/lsp-rooter.nvim",
-        event = "BufRead",
-        config = function()
-          require("lsp-rooter").setup()
-        end,
-    },
+    -- {
+    --     "ahmedkhalf/lsp-rooter.nvim",
+    --     event = "BufRead",
+    --     config = function()
+    --       require("lsp-rooter").setup()
+    --     end,
+    -- },
     {
         "ethanholz/nvim-lastplace",
         config = function()
@@ -337,16 +354,36 @@ lvim.plugins = {
     {
       'ku1ik/vim-monokai'
     },
+    {
+      'loctvl842/monokai-pro.nvim'
+    },
+    {
+      'notken12/base46-colors'
+    },
 }
 
 lvim.builtin.treesitter.rainbow.enable = true
 
+-- codeium setup
+
+-- table.insert(lvim.builtin.cmp.sources, 1, { name = "copilot" })
+-- table.insert(lvim.builtin.cmp.sources, 1, { name = "codeium" })
+local lspkind = require("lspkind")
+lvim.builtin.cmp.formatting = {
+  format = lspkind.cmp_format({
+    mode = "symbol",
+    maxwidth = 30, -- 最大宽度
+    ellipsis_char = "...", -- 超出部分显示省略号
+    symbol_map = { Codeium = "" , Copilot = "",}, -- 为 Codeium 定义自定义图标
+  }),
+}
+
 -- lvim.colorscheme = 'night-owl'
 -- lvim.colorscheme = 'mellifluous'
-lvim.colorscheme = 'tokyonight'
+-- lvim.colorscheme = 'tokyonight'
 -- lvim.colorscheme = 'tender'
 -- lvim.colorscheme = 'onedark'
--- lvim.colorscheme = 'dracula'
+lvim.colorscheme = 'dracula'
 -- lvim.colorscheme = 'kanagawa'
 -- lvim.colorscheme = 'vscode'
 -- lvim.colorscheme = 'github_dark_default'
@@ -356,6 +393,7 @@ lvim.colorscheme = 'tokyonight'
 -- lvim.colorscheme = 'nightfox'
 -- lvim.colorscheme = 'OceanicNext'
 -- lvim.colorscheme = 'monokai'
+-- lvim.colorscheme = 'monokai-pro'
 
 local dap = require('dap')
 dap.adapters.cppdbg = {
@@ -442,7 +480,7 @@ lvim.builtin.bigfile.config = {
 
 -- ---configure a server manually. IMPORTANT: Requires `:LvimCacheReset` to take effect
 -- ---see the full default list `:lua =lvim.lsp.automatic_configuration.skipped_servers`
--- vim.list_extend(lvim.lsp.automatic_configuration.skipped_servers, { "pyright" })
+-- vim.list_extend(lvim.lsp.automatic_configuration.skipped_servers, { "pyright"})
 -- local opts = {} -- check the lspconfig documentation for a list of all possible options
 -- require("lvim.lsp.manager").setup("pyright", opts)
 
